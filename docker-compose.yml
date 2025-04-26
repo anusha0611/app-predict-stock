@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  user-service:
+    build: ./services/user-service
+    container_name: user-service
+    ports:
+      - "5001:5001"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: user_db
+    depends_on:
+      - db
+
+  stock-data-service:
+    build: ./services/stock-data-service
+    container_name: stock-data-service
+    ports:
+      - "5002:5002"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: stock_db
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_USER_SERVICE_URL=http://user-service:5001
+      - VITE_STOCK_DATA_SERVICE_URL=http://stock-data-service:5002
+      - NODE_ENV=development
+    depends_on:
+      - user-service
+      - stock-data-service
+    volumes:
+      - ./frontend:/app
+
+  stock-prediction-service:
+    build: ./stock-prediction-service
+    ports:
+      - "5003:5003"
+    depends_on:
+      - db
+    restart: always
+
+
+volumes:
+  db_data:
