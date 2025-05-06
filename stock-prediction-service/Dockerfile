@@ -16,9 +16,12 @@ RUN mkdir -p models
 
 # Train the model during build
 RUN python models/train_model.py
+# RUN echo "0 2 * * * python /app/models/train_model.py" >> /etc/crontabs/root
+
 
 # Expose the Flask port
 EXPOSE 5003
 
 # Start the Flask application
 CMD ["python", "app.py"]
+# CMD ["sh", "-c", "crond -f & python app.py"]

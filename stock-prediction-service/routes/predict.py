@@ -22,7 +22,7 @@ custom_objects = {"mse": MeanSquaredError()}
 
 if os.path.exists(MODEL_PATH) and os.path.exists(SCALER_PATH):
     # model = load_model(MODEL_PATH)
-    model = load_model(MODEL_PATH, custom_objects=custom_objects)  # ✅ Fix applied
+    model = load_model(MODEL_PATH, custom_objects=custom_objects) 
     scaler = joblib.load(SCALER_PATH)
 else:
     model, scaler = None, None
